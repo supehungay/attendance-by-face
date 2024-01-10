@@ -45,7 +45,7 @@ venv/Scripts/activate
 ```shell
 pip install -r requirements.txt
 ```
-4. **Cài đặt biến môi trường** \\
+4. **Cài đặt biến môi trường** \
 Bạn cần chỉnh sửa đường dẫn trong `set_env.ps1`
 5. **Khởi chạy server**
 ```shell
