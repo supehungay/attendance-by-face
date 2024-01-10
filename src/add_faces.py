@@ -7,13 +7,6 @@ import matplotlib.pyplot as plt
 
 from info_to_database import img2db, info2db, train_model_knn
 
-# def add_info():
-#     msv = input("Cho cái mã sv: ")
-#     ten = input("Cho cái tên !!!: ")
-#     lop = input("Cho cái lớp: ")
-#     return msv, ten, lop
-
-
 def add_info(msv, ten, lop):
     cap = cv2.VideoCapture(0) 
 
