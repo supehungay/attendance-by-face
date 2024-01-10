@@ -1,0 +1,114 @@
+/* static/style.css */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    min-height: 100vh; /* Đảm bảo nội dung luôn căn giữa trên trang */
+}
+.container {
+    /* max-width: 600px;
+    margin: 0 auto;
+    padding: 20px; */
+
+    display: flex;
+    width: 100%;
+}
+
+.half {
+    flex: 1;
+    padding: 10px;
+}
+
+#data-content {
+    order: 1;
+}
+
+#form-content {
+    order: 2;
+    margin-left: 5%;
+    /* text-align: right; */
+}
+
+form {
+    margin-top: 20px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    width: 100px;  /* Đặt độ rộng của nhãn */
+    margin-right: 10px;  /* Khoảng cách giữa nhãn và ô nhập liệu */
+    /* text-align: left; */
+}
+
+form input {
+    width: calc(100% - 110px);  /* Đặt độ rộng của ô nhập liệu */
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    width: auto;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+thead {
+    background-color: #3498db;
+    color: white;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+
+#search-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ecf0f1;
+}
+
+#search {
+    padding: 5px;
+    width: 80px;
+}
+
+/* #clear {
+    border-radius: 5px;
+}
+
+#delete {
+    border-radius: 5px;
+} */
+
+/* 
+#search-results {
+    margin-top: 10px;
+    font-style: italic;
+    color: #7f8c8d;
+} */
