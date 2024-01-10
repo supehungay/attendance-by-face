@@ -29,7 +29,7 @@ sift_decorater.py: chứa các phương thức tạo descriptor từ đặc trun
 0. **Tạo database trên Fire theo hướng dẫn trên**
 
 1. **Clone repository**
-Để setup local, bạn cần clone repository này về:
+    Để setup local, bạn cần clone repository này về:
 ```shell
     git clone
 ```
