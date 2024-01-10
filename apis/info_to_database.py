@@ -1,4 +1,3 @@
-import firebase_admin
 from firebase_admin import credentials, db, storage
 import os
 import cv2
@@ -22,7 +21,10 @@ def info2db(msv, ten, lop):
         msv:
             {
                 'Họ tên': ten,
-                'Lớp': lop
+                'Lớp': lop,
+                'Điểm danh': '',
+                'Thời gian': '',
+                'Ghi chú': ''
             }
     }
     key, value = data.popitem()
@@ -108,9 +110,5 @@ def get_desc_from_storage():
     KEYPOINTS = np.array(all_keypoints)   
     DESCRIPTORS = np.array(all_descriptors) 
     LABELS = np.asarray(all_msv)
-    # print(KEYPOINTS.shape)
-    # print(DESCRIPTORS.shape)
-    # print(LABELS.shape)
-    # print(LABELS)
 
     return KEYPOINTS, DESCRIPTORS, LABELS

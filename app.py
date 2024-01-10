@@ -1,22 +1,22 @@
 from apis  import add_faces
-from apis.face_recognition import face_recognition
-# from apis.info_to_database import train_model_knn
+from apis.face_recognition import face_recognition, FaceRecognitionDataset
 import firebase_admin
 from firebase_admin import credentials, db, storage
 from config import *
 import pandas as pd
 from datetime import datetime
-import os
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
-# from flask import redirect, url_for
 app = Flask(__name__)
+dataset = None
+
 def init_db():
     cred = credentials.Certificate(CERD)
     firebase_admin.initialize_app(cred, {
         'databaseURL': DB_URL,
         'storageBucket': STR_URL
     })
-    return cred
+    dataset = FaceRecognitionDataset()
+    return cred, dataset
 
 def get_data():
     data_ref = db.reference('Students')
@@ -46,23 +46,20 @@ def submit_form():
 
     print(msv, ten, lop)
     add_faces.add_info(msv, ten, lop)
-    
-    # return f"Submitted: msv - {msv}, Tên - {ten}, lớp - {lop}"
-      # Cập nhật lại dữ liệu sau khi thêm thông tin mới
-    # data_list = get_data()
-
-    # return redirect(url_for('index', data_list=data_list))
+    dataset.update()
     return redirect('/')
-    # return render_template('index.html', data_list = data_list)
 
 @app.route('/detect')
 def recogni():
-    face_recognition()
+    face_recognition(dataset=dataset)
     return redirect('/')
     
 @app.route('/export', methods=['POST'])
 def export_to_excel():
     data_list = get_data()
+    if data_list is None:
+        return jsonify({'message': 'Data deleted successfully'})
+    
     df = pd.DataFrame(columns=['MSV', 'Họ tên', 'Lớp', 'Điểm danh', 'Thời gian', 'Ghi chú'])
     
     for item in data_list:
@@ -72,17 +69,20 @@ def export_to_excel():
         diemdanh = item['value']['Điểm danh']
         thoigian = item['value']['Thời gian']
         ghichu = item['value']['Ghi chú']
-        
-        df = df.append({
+        temp_df = pd.DataFrame({
             'MSV': msv,
             'Họ tên': ten,
             'Lớp': lop,
             'Điểm danh': diemdanh,
             'Thời gian': thoigian,
             'Ghi chú': ghichu
-        }, ignore_index=True)
-        
-    print("Print to excel")
+        }, index=[0])
+        df = pd.concat([df, temp_df], ignore_index=True)
+    file_name = f'attention_{datetime.now().strftime("%d-%m-%Y")}.xlsx'
+    save_path = os.path.join('../output/', file_name)
+
+    df.to_excel(save_path, index=False)
+    return send_file(save_path, as_attachment=True)
 
 @app.route('/delete/<msv>', methods=['DELETE'])
 def delete_data(msv):
@@ -91,14 +91,21 @@ def delete_data(msv):
     data_ref.child(msv).delete()
     
     bucket = storage.bucket()
-    blob = bucket.blob(f'data/{msv}.pkl')
+    blob = bucket.blob(f'desc_key/{msv}_keypoints.pkl')
     if blob.exists():
         blob.delete()
     else:
-        print(f"Blob 'data/20002029.pkl' does not exist.")
+        print(f'desc_key/{msv}_keypoints.pkl dont exist')
+    blob_img = bucket.blob(f'data/{msv}.pkl')
+
+    if blob_img.exists():
+        blob_img.delete()
+    else:
+        print(f'data/{msv}.pkl dont exist')
     # train_model_knn()
+    dataset.remove(msv=msv)
     return jsonify({'message': 'Data deleted successfully'})
 
 if __name__ == '__main__':
-    cred = init_db()
+    cred, dataset = init_db()
     app.run(debug=True)

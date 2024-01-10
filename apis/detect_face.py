@@ -20,8 +20,6 @@ def get_ycrcb_mask(image):
     
     # morphology
     kernel = np.ones((4, 3), np.uint8)
-    # msk_ycrcb_morpho = cv2.erode(msk_ycrcb, kernel, iterations=4)
-    # msk_ycrcb_morpho = cv2.morphologyEx(msk_ycrcb, cv2.MORPH_ERODE, kernel=kernel, iterations=4)
     msk_ycrcb_morpho = cv2.morphologyEx(msk_ycrcb, cv2.MORPH_OPEN, kernel=kernel, iterations=2)
     msk_ycrcb_morpho = cv2.morphologyEx(msk_ycrcb, cv2.MORPH_CLOSE, kernel=kernel, iterations=2)
     
@@ -40,16 +38,13 @@ def get_contour_coord(image):
     return x, y, w, h, max_contour
 
 def detect_face_with_template(image, template):
-    # image = resize_image(image)
     mask_ycrcb = get_ycrcb_mask(image)[1]
     x, y, w, h, max_contour = get_contour_coord(image)
     
     # template matching
     template = cv2.resize(template, (150, 150))
-    # template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
 
     mask_crop = mask_ycrcb[y:y + h, x:x + w]
-    # print(mask_crop.shape)
     if template.shape[0] > mask_crop.shape[0] or template.shape[1] > mask_crop.shape[1]:
         return None, None
     
