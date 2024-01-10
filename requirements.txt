@@ -1,0 +1,8 @@
+numpy==1.26.2
+firebase_admin==6.3.0
+pandas==1.4.4
+flask==1.1.2
+cv2==4.8.1
+matplotlib==3.5.2
+sklearn==1.0.2
+Python version: 3.9.13
