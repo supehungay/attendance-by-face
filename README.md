@@ -3,8 +3,6 @@
 <image src="https://i.imgur.com/jhUDRoq.png" alt="Web UI" width="600 px">
 
 <image src="https://i.imgur.com/DKWZmMI.png" alt="Detect UI" width="600 px">
-- [Thiết lập Firebase](#setting-up-firebase)
-- [Hướng dẫn chạy code](#running-program)
 
 ## Thiết lập Firebase
 ### Tạo project
@@ -34,7 +32,6 @@ sift_decorater.py: chứa các phương thức tạo descriptor từ đặc trun
 
 ## Hướng dẫn chạy code:
 0. **Tạo database trên Firebase theo hướng dẫn trên** \
-Có thể nhấn vào đây [Setting up Firebase](#setting-up-firebase)
 
 1. **Clone repository** \
 Để setup local, bạn cần clone repository này về:
