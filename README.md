@@ -36,7 +36,7 @@ sift_decorater.py: chứa các phương thức tạo descriptor từ đặc trun
 1. **Clone repository** \
 Để setup local, bạn cần clone repository này về:
 ```shell
-    git clone
+    git clone -b sift https://github.com/supehungay/attendance-by-face.git
 ```
 2. **Tạo và khởi chạy môi trường ảo**
 ```shell
