@@ -52,5 +52,5 @@ Bạn cần chỉnh sửa đường dẫn trong `set_env.ps1`
     python .\app.py
 ```
 6. **Mô tả chức năng của sản phẩm**
-<image src="https://imgur.com/jhUDRoq" alt="Web UI" width="600 px">
-<image src="https://imgur.com/DKWZmMI" alt="Detect UI" width="600 px">
+<image src="https://i.imgur.com/jhUDRoq.png" alt="Web UI" width="600 px">
+<image src="https://i.imgur.com/DKWZmMI.png" alt="Detect UI" width="600 px">
