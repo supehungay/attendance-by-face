@@ -48,6 +48,21 @@ class FaceRecognitionDataset:
         DESCRIPTORS = np.array(all_descriptors) 
         LABELS = np.asarray(all_msv)
         return KEYPOINTS, DESCRIPTORS, LABELS
+    
+    def addNewID(self, keypoints, descriptors, msv):
+        print("Adding new keys and desc to current storage")
+        all_keypoints = self.keypoints.tolist()
+        all_descriptors = self.descriptors.tolist()
+        all_msv = self.labels.tolist()
+
+        for keys, desc in zip(keypoints, descriptors):
+            all_keypoints.append(keys)
+            all_descriptors.append(desc)
+            all_msv.append(msv)
+        
+        self.keypoints = np.array(all_keypoints)   
+        self.descriptors = np.array(all_descriptors) 
+        self.labels = np.asarray(all_msv)
 
     def update(self):
         print("Starting update")

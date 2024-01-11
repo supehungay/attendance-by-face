@@ -45,8 +45,11 @@ def submit_form():
     lop = request.form.get('class')
 
     print(msv, ten, lop)
-    add_faces.add_info(msv, ten, lop)
-    dataset.update()
+    keyspoints, descriptors, msv = add_faces.add_info(msv, ten, lop)
+    if keyspoints is not None:
+        dataset.addNewID(keyspoints, descriptors, msv)
+    else:
+        dataset.update()
     return redirect('/')
 
 @app.route('/detect')

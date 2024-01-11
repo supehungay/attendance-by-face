@@ -52,7 +52,7 @@ def add_info(msv, ten, lop):
     # read frame and show
     if len(faces_data) < size:
         print('Chưa đủ số lượng ảnh đầu vào')
-        return
+        return None, None, None
 
     keypoints_desc_zip = []
     for idx, keypoint, descriptor in zip(np.arange(len(keys_data)), keys_data,desc_data):
@@ -64,7 +64,7 @@ def add_info(msv, ten, lop):
     
     img2db(msv, faces_zip)
     info2db(msv, ten, lop)
-    print(faces_data)
+    return keys_data, desc_data, msv
 
 def startRecording(cap, faces_data, size, sift, desc_data, keys_data, template, msv, count=0):
     while True:
