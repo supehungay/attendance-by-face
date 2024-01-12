@@ -45,15 +45,17 @@ def add_info(msv, ten, lop):
                 continue
         else:
             break
+        
+    # read frame and show
+    if len(faces_data) < size:
+        print('Chưa đủ số lượng ảnh đầu vào')
+        return False
+    
     # save faces data
     if record:
         startRecording(cap, faces_data, size, sift, desc_data, keys_data, template, msv, count=count)
         faces_data = np.asarray(faces_data)
         faces_data = faces_data.reshape(size, -1)
-    # read frame and show
-    if len(faces_data) < size:
-        print('Chưa đủ số lượng ảnh đầu vào')
-        return False
 
     keypoints_desc_zip = []
     for idx, keypoint, descriptor in zip(np.arange(len(keys_data)), keys_data,desc_data):

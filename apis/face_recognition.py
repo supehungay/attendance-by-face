@@ -97,11 +97,13 @@ def face_recognition(dataset: FaceRecognitionDataset = None):
     template = cv2.imread(TEMPLATE, 0)
     imgBackground=cv2.imread(BACKGROUND)
     time_start = datetime.now()
+    
+    attended = []
     while True:
         ret, frame = cap.read()
-        k = cv2.waitKey(1)
+        key_attention = cv2.waitKey(1)
 
-        if  k==ord('q') or k==ord('Q'):
+        if  key_attention==ord('q') or key_attention==ord('Q'):
             break
         
         flipped_frame = cv2.flip(frame, 1)
@@ -120,9 +122,16 @@ def face_recognition(dataset: FaceRecognitionDataset = None):
                 face_crop = cv2.cvtColor(face_crop, cv2.COLOR_BGR2GRAY)
                 
                 output = match_best_image(face_crop, train_descriptors=descriptors, train_keypoints=keypoints, class_labels=labels, sift=sift)
-                cv2.putText(face_detect, str(output), top_left, cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 255), 1)
-                key_attention = cv2.waitKey(1)
-                if key_attention == ord('x') or key_attention == ord('X'):
+                
+                if output in attended:
+                    cv2.putText(face_detect, "Attended", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (50, 255, 50), 1)
+                    cv2.putText(face_detect, str(output), (top_left[0] + 45, top_left[1] - 10), cv2.FONT_HERSHEY_COMPLEX, 1, (50, 255, 50), 1)
+                    
+                else:   
+                    cv2.putText(face_detect, str(output), (top_left[0] + 45, top_left[1] - 10), cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 255), 1)
+                
+                if (key_attention == ord('x') or key_attention == ord('X')) and output not in attended:
+                    attended.append(output)
                     ref = db.reference('Students')
                     
                     time_now = datetime.now()
