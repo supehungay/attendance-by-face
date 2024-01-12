@@ -4,3 +4,4 @@ temp.py
 notebook
 *pycache*
 serviceAccountKey.json
+venv

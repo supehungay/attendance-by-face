@@ -1,5 +1,3 @@
-import firebase_admin
-from firebase_admin import credentials
 from firebase_admin import db
 from firebase_admin import storage
 from sklearn.neighbors import KNeighborsClassifier
@@ -104,20 +102,17 @@ class FaceRecognitionDataset:
     def get_data(self):
         return self.keypoints, self.descriptors, self.labels
     
-def face_recognition(dataset: FaceRecognitionDataset = None):
-    sift = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.01, edgeThreshold=10)
+def face_recognition(dataset: FaceRecognitionDataset = None, attendances = [], sift = None):
     keypoints, descriptors, labels = dataset.get_data()
 
     cap = cv2.VideoCapture(0) 
     template = cv2.imread(TEMPLATE, 0)
     imgBackground=cv2.imread(BACKGROUND)
     time_start = datetime.now()
+    counter = 0
     while True:
         ret, frame = cap.read()
         k = cv2.waitKey(1)
-
-        if  k==ord('q'):
-            break
         flipped_frame = cv2.flip(frame, 1)
         try:
 
@@ -133,32 +128,38 @@ def face_recognition(dataset: FaceRecognitionDataset = None):
                 face_crop = flipped_frame[(top_left[1]) : (bottom_right[1]), (top_left[0]) : (bottom_right[0]), :]
                 face_crop = cv2.resize(face_crop, (IMAGE_SIZE, IMAGE_SIZE))
                 face_crop = cv2.cvtColor(face_crop, cv2.COLOR_BGR2GRAY)
-                
                 output = match_best_image(face_crop, train_descriptors=descriptors, train_keypoints=keypoints, class_labels=labels, sift=sift)
                 cv2.putText(face_detect, str(output), top_left, cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 255), 1)
                 key_attention = cv2.waitKey(1)
                 if key_attention == ord('x') or key_attention == ord('X'):
-                    ref = db.reference('Students')
-                    
-                    time_now = datetime.now()
-                    current_time = time_now.strftime("%d-%m-%Y %H:%M:%S")          
-                    threshold_time = timedelta(minutes=10)
-                    time_difference = time_now - time_start
-                    
-                    old_attendance = ref.child(output).child('Điểm danh').get()
-                    
-                    if time_difference > threshold_time:
-                        ref.child(output).update({'Ghi chú': f'Muộn {round(time_difference.total_seconds() / 60, 2)} phút'})
-                        new_attendance = "O" if old_attendance is None else old_attendance + " O"
-                    else:
-                        new_attendance = "X" if old_attendance is None else old_attendance + " X"
-                    ref.child(output).update({'Điểm danh': new_attendance})
-                    ref.child(output).update({'Thời gian': current_time})
+                    if str(output) not in attendances:
+                        ref = db.reference('Students')
+                        
+                        time_now = datetime.now()
+                        current_time = time_now.strftime("%d-%m-%Y %H:%M:%S")          
+                        threshold_time = timedelta(minutes=10)
+                        time_difference = time_now - time_start
+                        
+                        old_attendance = ref.child(output).child('Điểm danh').get()
+                        
+                        if time_difference > threshold_time:
+                            ref.child(output).update({'Ghi chú': f'Muộn {round(time_difference.total_seconds() / 60, 2)} phút'})
+                            new_attendance = "O" if old_attendance is None else old_attendance + " O"
+                        else:
+                            new_attendance = "X" if old_attendance is None else old_attendance + " X"
+                        ref.child(output).update({'Điểm danh': new_attendance})
+                        ref.child(output).update({'Thời gian': current_time})
+                        attendances.append(str(output))
+                        print(attendances)
+                
         except ValueError as e:
             print("Error:", e)
             print("No contours found.")
-            pass
+            break
+        counter += 1
         imgBackground[100:100 + 480, 70:70 + 640] = face_detect
         cv2.imshow('Video1', imgBackground)
+        if  k==ord('q') or k == 27:
+            break
     cap.release()
     cv2.destroyAllWindows()

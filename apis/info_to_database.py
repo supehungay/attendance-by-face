@@ -90,7 +90,6 @@ def get_desc_from_storage():
     idx = 0
     try:
         for blob in blobs:
-            print(f'Blob {idx}: ')
             file_contents = blob.download_as_bytes()
             keys_desc_zip = pickle.loads(file_contents)
             file_name = os.path.basename(blob.name)
@@ -102,7 +101,7 @@ def get_desc_from_storage():
                 all_msv.append(msv.split("_")[0])
                 all_descriptors.append(descriptors)
                 all_keypoints.append(fixed_keypoints)
-            print(f"MSV: {msv.split('_')[0]}")
+            print(f"Downloaded data for MSV: {msv.split('_')[0]}")
             idx += 1
     except Exception as e:
         print(f'Error downloading file: {e}')

@@ -1,3 +1,4 @@
+import cv2
 from apis  import add_faces
 from apis.face_recognition import face_recognition, FaceRecognitionDataset
 import firebase_admin
@@ -8,7 +9,8 @@ from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for
 app = Flask(__name__)
 dataset = None
-
+attendances = None
+sift = None
 def init_db():
     cred = credentials.Certificate(CERD)
     firebase_admin.initialize_app(cred, {
@@ -45,7 +47,7 @@ def submit_form():
     lop = request.form.get('class')
 
     print(msv, ten, lop)
-    keyspoints, descriptors, msv = add_faces.add_info(msv, ten, lop)
+    keyspoints, descriptors, msv = add_faces.add_info(msv, ten, lop, sift)
     if keyspoints is not None:
         dataset.addNewID(keyspoints, descriptors, msv)
     else:
@@ -54,7 +56,7 @@ def submit_form():
 
 @app.route('/detect')
 def recogni():
-    face_recognition(dataset=dataset)
+    face_recognition(dataset=dataset, attendances=attendances, sift=sift)
     return redirect('/')
     
 @app.route('/export', methods=['POST'])
@@ -110,5 +112,7 @@ def delete_data(msv):
     return jsonify({'message': 'Data deleted successfully'})
 
 if __name__ == '__main__':
+    sift = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.01, edgeThreshold=10)
+    attendances = []
     cred, dataset = init_db()
     app.run(debug=True)

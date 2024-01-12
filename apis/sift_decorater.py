@@ -47,7 +47,7 @@ def sift_descriptor(image, sift):
 def euclid_distance(descriptor1, descriptor2):
     descriptor1 = np.array(descriptor1)
     descriptor2 = np.array(descriptor2)
-    return np.sum((descriptor1 - descriptor2)**2)
+    return np.linalg.norm(descriptor1 - descriptor2)
 
 def match_best_image(test_image, train_descriptors, train_keypoints, class_labels, sift):
     best_match_class = None

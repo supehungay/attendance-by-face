@@ -5,10 +5,8 @@ import pickle
 from apis.info_to_database import info2db, key_des2db, convert_to_dict, img2db
 from apis.sift_decorater import sift_descriptor
 from config import *
-def add_info(msv, ten, lop):
-    
+def add_info(msv, ten, lop, sift):
     cap = cv2.VideoCapture(0) 
-    sift= cv2.xfeatures2d.SIFT_create(contrastThreshold=0.01, edgeThreshold=10)
     template = cv2.imread(TEMPLATE, 0)
 
     size = 20
