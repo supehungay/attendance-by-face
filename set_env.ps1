@@ -1,0 +1,5 @@
+$Env:DB_URL = "https://attendance-by-face-default-rtdb.firebaseio.com/"
+$Env:STR_URL = "attendance-by-face.appspot.com"
+$Env:TEMPLATE = "./static/template.png"
+$Env:CERD = "serviceAccountKey.json"
+$Env:BACKGROUND = "./static/background.jpg"
