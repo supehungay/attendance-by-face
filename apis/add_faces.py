@@ -6,7 +6,7 @@ from apis.info_to_database import info2db, key_des2db, convert_to_dict, img2db
 from apis.sift_decorater import sift_descriptor
 from config import *
 def add_info(msv, ten, lop, sift):
-    cap = cv2.VideoCapture(0) 
+    cap = cv2.VideoCapture(CAMERA) 
     template = cv2.imread(TEMPLATE, 0)
 
     size = 20
@@ -38,7 +38,7 @@ def add_info(msv, ten, lop, sift):
                     cv2.putText(face_detect, "Press R to start recording", (100, 100), cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 255), 1)
                     cv2.imshow('Video1', face_detect)
             except Exception as e:
-                print(f'Error downloading file: {e}')
+                print(f'Error: {e}')
                 continue
         else:
             break
@@ -65,6 +65,7 @@ def add_info(msv, ten, lop, sift):
     return keys_data, desc_data, msv
 
 def startRecording(cap, faces_data, size, sift, desc_data, keys_data, template, msv, count=0):
+    error_img = 0
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -96,7 +97,9 @@ def startRecording(cap, faces_data, size, sift, desc_data, keys_data, template, 
                     desc_data.append(descriptor)
                     keys_data.append(keypoint)
                 except ValueError as e:
+                    error_img += 1
                     print(f"Error: {e}")
+                    print(f"error: {error_img}")
                     continue
             count+=1
             cv2.imshow('Video2', face_crop)

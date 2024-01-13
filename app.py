@@ -10,7 +10,9 @@ from flask import Flask, render_template, request, send_file, jsonify, redirect,
 app = Flask(__name__)
 dataset = None
 attendances = None
-sift = None
+sift_train = None
+sift_test = None
+model = None
 def init_db():
     cred = credentials.Certificate(CERD)
     firebase_admin.initialize_app(cred, {
@@ -24,6 +26,7 @@ def get_data():
     data_ref = db.reference('Students')
     data = data_ref.get()
     if data is not None:
+        print(data)
         data_list = [{'key': key, 'value': value} for key, value in data.items()]
         return data_list
     return None
@@ -47,16 +50,17 @@ def submit_form():
     lop = request.form.get('class')
 
     print(msv, ten, lop)
-    keyspoints, descriptors, msv = add_faces.add_info(msv, ten, lop, sift)
+    keyspoints, descriptors, msv = add_faces.add_info(msv, ten, lop, sift_train)
     if keyspoints is not None:
         dataset.addNewID(keyspoints, descriptors, msv)
     else:
         dataset.update()
+    # dataset.train_model_knn()
     return redirect('/')
 
 @app.route('/detect')
 def recogni():
-    face_recognition(dataset=dataset, attendances=attendances, sift=sift)
+    face_recognition(dataset=dataset, attendances=attendances, sift=sift_test, model=model)
     return redirect('/')
     
 @app.route('/export', methods=['POST'])
@@ -112,7 +116,9 @@ def delete_data(msv):
     return jsonify({'message': 'Data deleted successfully'})
 
 if __name__ == '__main__':
-    sift = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.01, edgeThreshold=10)
+    sift_train = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.02, edgeThreshold=20)
+    sift_test = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.01, edgeThreshold=10)
     attendances = []
     cred, dataset = init_db()
+    # model = dataset.get_knn()
     app.run(debug=True)

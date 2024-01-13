@@ -30,20 +30,8 @@ def info2db(msv, ten, lop):
     key, value = data.popitem()
     ref.child(key).set(value)
     
-def train_model_knn():
+def train_model_knn(all_faces, all_msv):
     bucket = storage.bucket(STR_URL)
-    blobs = bucket.list_blobs(prefix='data/')
-    all_faces = []
-    all_msv = []
-    for blob in blobs:
-        data_as_bytes = blob.download_as_bytes()
-        loaded_data = pickle.loads(data_as_bytes)
-        file_name = os.path.basename(blob.name)
-        msv = os.path.splitext(file_name)[0]
-        
-        all_msv.extend([msv] * len(loaded_data))
-        all_faces.extend(loaded_data)
-        
     FACES = np.asarray(all_faces)    
     LABELS = np.asarray(all_msv)
     print(FACES.shape)

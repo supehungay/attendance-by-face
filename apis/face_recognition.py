@@ -12,8 +12,10 @@ from datetime import datetime, timedelta
 
 class FaceRecognitionDataset:
     def __init__(self) -> None:
+        file_model = f'model/model_knn.pkl'
         self.keypoints, self.descriptors, self.labels = get_desc_from_storage()
         self.bucket = storage.bucket(STR_URL)
+        self.model = None
     
     @staticmethod
     def get_desc_from_storage():
@@ -47,6 +49,17 @@ class FaceRecognitionDataset:
         LABELS = np.asarray(all_msv)
         return KEYPOINTS, DESCRIPTORS, LABELS
     
+    def train_model_knn(self):
+        bucket = storage.bucket(STR_URL)
+        FACES = np.asarray(self.descriptors).reshape(len(self.descriptors), -1)   
+        LABELS = np.asarray(self.labels)
+        
+        knn = KNeighborsClassifier(n_neighbors=2)
+        knn.fit(FACES, LABELS)
+        save_model = pickle.dumps(knn)
+        blob = bucket.blob('model/model_knn.pkl')
+        blob.upload_from_string(save_model)
+
     def addNewID(self, keypoints, descriptors, msv):
         print("Adding new keys and desc to current storage")
         all_keypoints = self.keypoints.tolist()
@@ -94,6 +107,7 @@ class FaceRecognitionDataset:
         self.keypoints = np.array(all_keypoints)   
         self.descriptors = np.array(all_descriptors) 
         self.labels = np.asarray(all_msv)
+
     def remove(self, msv):
         idx = np.where(self.labels == msv)[0]
         self.descriptors = np.delete(self.descriptors, idx, axis=0)
@@ -101,15 +115,18 @@ class FaceRecognitionDataset:
         self.labels = np.delete(self.labels, idx, axis=0)
     def get_data(self):
         return self.keypoints, self.descriptors, self.labels
+    def get_knn(self):
+        return self.model
     
-def face_recognition(dataset: FaceRecognitionDataset = None, attendances = [], sift = None):
+def face_recognition(dataset: FaceRecognitionDataset = None, attendances = [], sift = None, model=None):
     keypoints, descriptors, labels = dataset.get_data()
 
-    cap = cv2.VideoCapture(0) 
+    cap = cv2.VideoCapture(CAMERA) 
     template = cv2.imread(TEMPLATE, 0)
     imgBackground=cv2.imread(BACKGROUND)
     time_start = datetime.now()
     counter = 0
+    output = None
     while True:
         ret, frame = cap.read()
         k = cv2.waitKey(1)
@@ -128,7 +145,8 @@ def face_recognition(dataset: FaceRecognitionDataset = None, attendances = [], s
                 face_crop = flipped_frame[(top_left[1]) : (bottom_right[1]), (top_left[0]) : (bottom_right[0]), :]
                 face_crop = cv2.resize(face_crop, (IMAGE_SIZE, IMAGE_SIZE))
                 face_crop = cv2.cvtColor(face_crop, cv2.COLOR_BGR2GRAY)
-                output = match_best_image(face_crop, train_descriptors=descriptors, train_keypoints=keypoints, class_labels=labels, sift=sift)
+                if counter % 30 == 0:
+                    output = match_best_image(face_crop, train_descriptors=descriptors, train_keypoints=keypoints, class_labels=labels, sift=sift, model=model)
                 cv2.putText(face_detect, str(output), top_left, cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 255), 1)
                 key_attention = cv2.waitKey(1)
                 if key_attention == ord('x') or key_attention == ord('X'):
